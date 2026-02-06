@@ -1,803 +1,115 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Controllable Poker Bot for Clubs & Rooms</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    :root {
-      --bg: #050810;
-      --card: #0b1120;
-      --accent: #38bdf8;
-      --accent-soft: rgba(56, 189, 248, 0.14);
-      --text: #f9fafb;
-      --muted: #9ca3af;
-      --border: #1f2937;
-      --radius-lg: 18px;
-      --radius-md: 10px;
-      --shadow-soft: 0 22px 45px rgba(0, 0, 0, 0.55);
-      --max-width: 960px;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-        "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #111827 0, #020617 55%, #000 100%);
-      color: var(--text);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .page { min-height: 100vh; display: flex; flex-direction: column; }
-
-    header {
-      border-bottom: 1px solid rgba(148, 163, 184, 0.14);
-      background: rgba(15, 23, 42, 0.96);
-      backdrop-filter: blur(14px);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .nav {
-      max-width: var(--max-width);
-      margin: 0 auto;
-      padding: 12px 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .logo-mark {
-      width: 28px;
-      height: 28px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 0, #a5f3fc, #22c55e 35%, #0f172a 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 18px rgba(56, 189, 248, 0.7);
-    }
-
-    .logo-mark span {
-      font-weight: 700;
-      font-size: 14px;
-      color: #020617;
-    }
-
-    .logo-text-main {
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      font-size: 12px;
-    }
-
-    .logo-text-sub {
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 13px;
-    }
-
-    .nav-link {
-      color: var(--muted);
-      text-decoration: none;
-      padding: 6px 8px;
-      border-radius: 999px;
-      transition: color 0.15s ease, background 0.15s ease;
-    }
-
-    .nav-link:hover {
-      color: var(--text);
-      background: rgba(148, 163, 184, 0.1);
-    }
-
-    .btn {
-      border-radius: 999px;
-      border: none;
-      cursor: pointer;
-      font-size: 14px;
-      padding: 9px 16px;
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.18s ease, box-shadow 0.18s ease,
-        transform 0.12s ease;
-      text-decoration: none;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #0ea5e9, #22c55e);
-      color: #020617;
-      box-shadow: 0 14px 30px rgba(56, 189, 248, 0.4);
-    }
-
-    .btn-primary:hover {
-      box-shadow: 0 18px 40px rgba(56, 189, 248, 0.6);
-      transform: translateY(-1px);
-    }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--muted);
-      border: 1px solid rgba(148, 163, 184, 0.5);
-    }
-
-    .btn-outline:hover {
-      color: var(--text);
-      border-color: rgba(148, 163, 184, 0.9);
-      background: rgba(15, 23, 42, 0.9);
-    }
-
-    .btn span.arrow { font-size: 15px; margin-left: 2px; }
-
-    main { flex: 1; }
-
-    .hero {
-      max-width: var(--max-width);
-      margin: 26px auto 0;
-      padding: 0 18px 10px;
-      display: grid;
-      grid-template-columns: minmax(0, 3fr) minmax(0, 2.5fr);
-      gap: 26px;
-    }
-
-    .hero-left { padding-right: 10px; }
-
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 4px 9px;
-      border-radius: 999px;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.42);
-      color: var(--muted);
-      gap: 6px;
-    }
-
-    .hero-badge-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 0, #a5f3fc, #22c55e 75%);
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.8);
-    }
-
-    .hero-title {
-      margin-top: 18px;
-      font-size: clamp(30px, 5vw, 40px);
-      line-height: 1.1;
-      letter-spacing: -0.03em;
-    }
-
-    .hero-title span.accent {
-      background: linear-gradient(135deg, #a5f3fc, #22c55e);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-
-    .hero-subtitle {
-      margin-top: 14px;
-      font-size: 16px;
-      color: var(--muted);
-      max-width: 520px;
-    }
-
-    .hero-subtitle-strong {
-      color: #e5e7eb;
-    }
-
-    .hero-cta {
-      margin-top: 22px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .hero-meta {
-      margin-top: 18px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .hero-meta span.dot {
-      width: 3px;
-      height: 3px;
-      background: rgba(148, 163, 184, 0.7);
-      border-radius: 999px;
-      align-self: center;
-    }
-
-    .hero-right {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .hero-card {
-      width: 100%;
-      max-width: 380px;
-      background: radial-gradient(circle at top, #1f2937 0, #020617 70%);
-      border-radius: 22px;
-      border: 1px solid rgba(148, 163, 184, 0.45);
-      box-shadow: var(--shadow-soft);
-      padding: 18px 18px 16px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at -10% -10%, rgba(56, 189, 248, 0.3), transparent 65%);
-      opacity: 0.8;
-      pointer-events: none;
-    }
-
-    .hero-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero-card-title {
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: #9ca3af;
-    }
-
-    .hero-card-badge {
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.55);
-    }
-
-    .hero-card-main {
-      position: relative;
-      z-index: 1;
-      margin-top: 14px;
-      padding: 12px;
-      border-radius: 18px;
-      background: rgba(15, 23, 42, 0.96);
-      border: 1px solid rgba(31, 41, 55, 0.95);
-    }
-
-    .hero-card-main-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .hero-card-main-title {
-      font-size: 15px;
-      font-weight: 500;
-    }
-
-    .hero-card-main-sub {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .hero-card-pill {
-      padding: 4px 9px;
-      border-radius: 999px;
-      background: rgba(56, 189, 248, 0.14);
-      color: #e0f2fe;
-      font-size: 11px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .hero-card-pill-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: #38bdf8;
-      box-shadow: 0 0 8px rgba(56, 189, 248, 0.9);
-    }
-
-    .hero-card-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .hero-card-stat {
-      padding: 9px 10px;
-      border-radius: 12px;
-      border: 1px solid rgba(31, 41, 55, 0.9);
-      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.95), #020617);
-    }
-
-    .hero-card-stat-label {
-      font-size: 11px;
-      color: var(--muted);
-      margin-bottom: 3px;
-    }
-
-    .hero-card-stat-value {
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    .hero-card-footer {
-      margin-top: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .hero-card-footer span.key {
-      color: #e5e7eb;
-      font-weight: 500;
-    }
-
-    .section {
-      max-width: var(--max-width);
-      margin: 8px auto 0;
-      padding: 8px 18px 24px;
-    }
-
-    .section-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.6fr);
-      gap: 20px;
-    }
-
-    .section-title {
-      font-size: 20px;
-      margin-bottom: 6px;
-    }
-
-    .section-subtitle {
-      font-size: 14px;
-      color: var(--muted);
-      max-width: 430px;
-    }
-
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 6px;
-    }
-
-    .feature-card {
-      background: var(--card);
-      border-radius: var(--radius-md);
-      border: 1px solid rgba(31, 41, 55, 0.95);
-      padding: 11px 12px 12px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .feature-card::before {
-      content: "";
-      position: absolute;
-      inset: -40%;
-      background: radial-gradient(
-        circle at top left,
-        rgba(56, 189, 248, 0.15),
-        transparent 65%
-      );
-      opacity: 0.7;
-      pointer-events: none;
-    }
-
-    .feature-icon {
-      width: 22px;
-      height: 22px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      margin-bottom: 7px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .feature-title {
-      font-size: 14px;
-      margin-bottom: 3px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .feature-text {
-      font-size: 13px;
-      color: var(--muted);
-      position: relative;
-      z-index: 1;
-    }
-
-    .section-highlight {
-      margin-top: 4px;
-      padding: 12px 12px;
-      border-radius: var(--radius-lg);
-      background: radial-gradient(circle at top left, var(--accent-soft), #020617);
-      border: 1px solid rgba(56, 189, 248, 0.45);
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .section-highlight-strong { font-weight: 500; }
-
-    .section-highlight-note {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .cta {
-      max-width: var(--max-width);
-      margin: 6px auto 30px;
-      padding: 12px 18px 22px;
-    }
-
-    .cta-card {
-      border-radius: 20px;
-      background: radial-gradient(circle at bottom right, #111827 0, #020617 70%);
-      border: 1px solid rgba(148, 163, 184, 0.45);
-      padding: 18px 18px 16px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-      box-shadow: var(--shadow-soft);
-    }
-
-    .cta-title {
-      font-size: 18px;
-      margin-bottom: 4px;
-    }
-
-    .cta-text {
-      font-size: 14px;
-      color: var(--muted);
-      max-width: 420px;
-    }
-
-    .cta-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .btn-telegram {
-      background: #0ea5e9;
-      color: #020617;
-      border-radius: 999px;
-      padding: 9px 16px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 500;
-      text-decoration: none;
-      box-shadow: 0 14px 30px rgba(14, 165, 233, 0.35);
-      transition: box-shadow 0.18s ease, transform 0.12s ease, background 0.18s ease;
-    }
-
-    .btn-telegram:hover {
-      background: #38bdf8;
-      box-shadow: 0 18px 40px rgba(14, 165, 233, 0.55);
-      transform: translateY(-1px);
-    }
-
-    .btn-telegram-icon {
-      width: 18px;
-      height: 18px;
-      border-radius: 999px;
-      background: #e0f2fe;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-    }
-
-    footer {
-      padding: 10px 18px 18px;
-      font-size: 11px;
-      color: var(--muted);
-      text-align: center;
-    }
-
-    @media (max-width: 880px) {
-      .hero { grid-template-columns: minmax(0, 1fr); }
-      .hero-left { padding-right: 0; }
-      .hero-right { margin-top: 6px; }
-      .section-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-      .feature-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    @media (max-width: 640px) {
-      .nav,
-      .hero,
-      .section,
-      .cta {
-        padding-inline: 14px;
-      }
-      .hero-title { font-size: 28px; }
-      .hero-card { max-width: 100%; }
-      .cta-card { padding: 16px 14px 14px; }
-    }
-  </style>
-</head>
-<body>
-  <div class="page">
-    <header>
-      <div class="nav">
-        <div class="logo">
-          <div class="logo-mark"><span>B</span></div>
-          <div>
-            <div class="logo-text-main">Controllable Poker Bot</div>
-            <div class="logo-text-sub">Focused on rake growth</div>
-          </div>
-        </div>
-        <div class="nav-actions">
-          <a href="#how-it-works" class="nav-link">How it increases rake</a>
-          <a href="#features" class="nav-link">What it can do</a>
-          <a href="#contact" class="btn btn-primary">Contact via Telegram</a>
-        </div>
-      </div>
-    </header>
-
-    <main>
-      <!-- Hero -->
-      <section class="hero">
-        <div class="hero-left">
-          <div class="hero-badge">
-            <span class="hero-badge-dot"></span>
-            <span>Designed for poker clubs & rooms</span>
-          </div>
-          <h1 class="hero-title">
-            Controllable Poker Bot<br />
-            <span class="accent">built to grow your rake</span>
-          </h1>
-          <p class="hero-subtitle">
-            A dedicated bot that sits at your tables, keeps games running and
-            generates more hands — so your club earns higher rake without
-            relying on external traffic.
-          </p>
-
-          <div class="hero-cta">
-            <a href="#contact" class="btn btn-primary">
-              Contact via Telegram <span class="arrow">↗</span>
-            </a>
-            <a href="#how-it-works" class="btn btn-outline">How it works</a>
-          </div>
-
-          <div class="hero-meta">
-            <span>Supports tables when human traffic is low</span>
-            <span class="dot"></span>
-            <span>More hands played → more rake for your club</span>
-          </div>
-        </div>
-
-        <div class="hero-right">
-          <div class="hero-card" aria-hidden="true">
-            <div class="hero-card-header">
-              <div>
-                <div class="hero-card-title">Rake overview</div>
-                <div class="hero-card-main-sub">Bot-assisted tables</div>
-              </div>
-              <div class="hero-card-badge">Club view</div>
-            </div>
-
-            <div class="hero-card-main">
-              <div class="hero-card-main-top">
-                <div>
-                  <div class="hero-card-main-title">More active tables</div>
-                  <div class="hero-card-main-sub">
-                    Bot fills empty seats and keeps games going.
-                  </div>
-                </div>
-                <div class="hero-card-pill">
-                  <span class="hero-card-pill-dot"></span>
-                  <span>Rake growth focus</span>
-                </div>
-              </div>
-
-              <div class="hero-card-grid">
-                <div class="hero-card-stat">
-                  <div class="hero-card-stat-label">Hands per hour</div>
-                  <div class="hero-card-stat-value">+27%</div>
-                </div>
-                <div class="hero-card-stat">
-                  <div class="hero-card-stat-label">Average rake</div>
-                  <div class="hero-card-stat-value">+16%</div>
-                </div>
-                <div class="hero-card-stat">
-                  <div class="hero-card-stat-label">Active tables</div>
-                  <div class="hero-card-stat-value">6 / 8</div>
-                </div>
-                <div class="hero-card-stat">
-                  <div class="hero-card-stat-label">Empty seats</div>
-                  <div class="hero-card-stat-value">Low</div>
-                </div>
-              </div>
-
-              <div class="hero-card-footer">
-                <span>Bot online where you allow it</span>
-                <span><span class="key">Admin control</span> required</span>
-              </div>
-            </div>
-          </div>
-        </div>
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+
+export default function PokerBotWebsite() {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white">
+      {/* Hero Section */}
+      <section className="text-center py-24 px-6">
+        <motion.h1
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-5xl md:text-6xl font-bold mb-6"
+        >
+          Controllable Poker Bot
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.8 }}
+          className="text-xl text-gray-300 max-w-2xl mx-auto"
+        >
+          A powerful solution for poker clubs and private rooms that increases
+          table activity, improves rake growth, and provides advanced player
+          analytics — all under your full control.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="mt-10"
+        >
+          <a href="https://t.me/your_telegram" target="_blank" rel="noopener noreferrer">
+  <Button className="text-lg px-8 py-6 rounded-2xl">
+    Contact Us
+  </Button>
+</a>
+        </motion.div>
       </section>
 
-      <!-- How it increases rake -->
-      <section id="how-it-works" class="section">
-        <div class="section-grid">
-          <div>
-            <h2 class="section-title">How the bot grows your club’s rake</h2>
-            <p class="section-subtitle">
-              The goal is simple: keep more tables running for longer, so your
-              room generates more rake from the same player base.
-            </p>
-          </div>
-          <div>
-            <ul style="list-style: none; padding-left: 0; font-size: 14px; color: var(--muted); display: grid; gap: 6px;">
-              <li>• Fills seats when there are not enough players to start or continue a game.</li>
-              <li>• Maintains minimum table activity during night hours and slow weekdays.</li>
-              <li>• Helps reach a stable number of hands per hour on key limits.</li>
-              <li>• Lets your regular players always find a live table instead of leaving the app.</li>
-            </ul>
-            <div class="section-highlight" style="margin-top: 10px;">
-              <div>
-                <div class="section-highlight-strong">
-                  More table activity = more rake for the club.
-                </div>
-                <div class="section-highlight-note">
-                  The bot doesn’t replace your players — it keeps games alive so
-                  every visiting player can sit down and generate rake.
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Features Section */}
+      <section className="px-6 pb-24 max-w-6xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <FeatureCard
+          title="Autonomous Gameplay Support"
+          description="Keeps tables active with intelligent bot participation that adapts to game flow and player dynamics."
+        />
+
+        <FeatureCard
+          title="Smart Risk Management"
+          description="Advanced safety algorithms control bot behavior, ensuring balanced gameplay and controlled risk exposure."
+        />
+
+        <FeatureCard
+          title="Player Behavioral Analytics"
+          description="Gain valuable insights into player tendencies, engagement, and patterns to improve your club’s strategy."
+        />
+
+        <FeatureCard
+          title="Full Administrative Control"
+          description="Complete control over bot parameters, activity levels, and performance directly from your admin panel."
+        />
+
+        <FeatureCard
+          title="Increase Table Activity"
+          description="Maintain consistent table traffic and player engagement, even during off-peak hours."
+        />
+
+        <FeatureCard
+          title="Rake Growth Optimization"
+          description="More hands played equals higher rake generation and improved overall profitability."
+        />
       </section>
 
-      <!-- Features -->
-      <section id="features" class="section">
-        <div class="section-grid">
-          <div>
-            <h2 class="section-title">What the bot can do</h2>
-            <p class="section-subtitle">
-              You stay in control while the bot quietly supports your ecosystem
-              in the background.
-            </p>
-          </div>
-          <div class="feature-grid">
-            <article class="feature-card">
-              <div class="feature-icon">1</div>
-              <h3 class="feature-title">Autonomous seat filling</h3>
-              <p class="feature-text">
-                The bot sits down on selected tables according to your rules:
-                limits, formats, time windows and maximum number of bots per
-                table.
-              </p>
-            </article>
-
-            <article class="feature-card">
-              <div class="feature-icon">2</div>
-              <h3 class="feature-title">Flexible behaviour profiles</h3>
-              <p class="feature-text">
-                Different play styles for different games: tighter or looser,
-                passive or more active — always within the boundaries you set.
-              </p>
-            </article>
-
-            <article class="feature-card">
-              <div class="feature-icon">3</div>
-              <h3 class="feature-title">Simple admin control</h3>
-              <p class="feature-text">
-                Admins decide where and when the bot is allowed to play. You
-                can enable or disable it per table in a couple of clicks.
-              </p>
-            </article>
-
-            <article class="feature-card">
-              <div class="feature-icon">4</div>
-              <h3 class="feature-title">Risk‑aware configuration</h3>
-              <p class="feature-text">
-                Set limits on stakes, table count and playing time so the bot
-                behaves exactly as you want and stays within your risk profile.
-              </p>
-            </article>
-          </div>
-        </div>
+      {/* CTA Section */}
+      <section className="text-center py-20 bg-gray-950">
+        <h2 className="text-4xl font-semibold mb-6">
+          Grow Your Poker Club with Intelligent Automation
+        </h2>
+        <p className="text-gray-400 mb-8 max-w-xl mx-auto">
+          Take full control of your tables, increase engagement, and maximize
+          profits using our advanced poker bot technology.
+        </p>
+        <a href="https://t.me/hrbotpo" target="_blank" rel="noopener noreferrer">
+  <Button className="text-lg px-8 py-6 rounded-2xl">
+    Contact Us
+  </Button>
+</a>
       </section>
 
-      <!-- Who it's for -->
-      <section class="section">
-        <div class="section-grid">
-          <div>
-            <h2 class="section-title">Who it is built for</h2>
-            <p class="section-subtitle">
-              The bot is aimed at clubs and rooms that want more stable rake
-              from their existing traffic.
-            </p>
-          </div>
-          <div>
-            <ul style="list-style: none; padding-left: 0; font-size: 14px; color: var(--muted); display: grid; gap: 6px;">
-              <li>• Private online clubs with fluctuating traffic.</li>
-              <li>• Home-game style rooms that need games during off‑peak hours.</li>
-              <li>• Communities where players often see empty tables and leave.</li>
-            </ul>
-          </div>
-        </div>
-      </section>
+      {/* Footer */}
+      <footer className="text-center py-10 text-gray-500 text-sm">
+        © {new Date().getFullYear()} Controllable Poker Bot. All rights reserved.
+      </footer>
+    </div>
+  );
+}
 
-      <!-- Contact -->
-      <section id="contact" class="cta">
-        <div class="cta-card">
-          <div>
-            <h2 class="cta-title">Want to see how it can work for your club?</h2>
-            <p class="cta-text">
-              Send me a message on Telegram, tell me a bit about your current
-              setup, and I’ll show how the bot can help increase rake on top of
-              your existing traffic.
-            </p>
-          </div>
-          <div class="cta-actions">
-            <!-- Replace YOUR_TELEGRAM_USERNAME with your real @username -->
-            <a href="https://t.me/hrbotpo" class="btn-telegram">
-              <span class="btn-telegram-icon">▶</span>
-              <span>Write in Telegram</span>
-            </a>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer>
-      © <span id="year"></span> Controllable Poker Bot. All rights reserved.
-    </footer>
-  </div>
-
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
-</body>
-</html>
+function FeatureCard({ title, description }) {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.05 }}
+      className="h-full"
+    >
+      <Card className="bg-gray-900 border-gray-800 h-full rounded-2xl shadow-xl">
+        <CardContent className="p-6">
+          <h3 className="text-xl font-semibold mb-3">{title}</h3>
+          <p className="text-gray-400">{description}</p>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+}
