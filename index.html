@@ -1,115 +1,90 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Controllable Poker Bot</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white">
 
-export default function PokerBotWebsite() {
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white">
-      {/* Hero Section */}
-      <section className="text-center py-24 px-6">
-        <motion.h1
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-5xl md:text-6xl font-bold mb-6"
-        >
-          Controllable Poker Bot
-        </motion.h1>
+  <!-- Hero Section -->
+  <section class="text-center py-24 px-6 bg-gradient-to-b from-black via-gray-900 to-black">
+    <h1 class="text-5xl md:text-6xl font-bold mb-6">
+      Controllable Poker Bot
+    </h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.8 }}
-          className="text-xl text-gray-300 max-w-2xl mx-auto"
-        >
-          A powerful solution for poker clubs and private rooms that increases
-          table activity, improves rake growth, and provides advanced player
-          analytics — all under your full control.
-        </motion.p>
+    <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+      A powerful solution for poker clubs and private rooms that increases
+      table activity, improves rake growth, and provides advanced player
+      analytics — all under your full control.
+    </p>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="mt-10"
-        >
-          <a href="https://t.me/your_telegram" target="_blank" rel="noopener noreferrer">
-  <Button className="text-lg px-8 py-6 rounded-2xl">
-    Contact Us
-  </Button>
-</a>
-        </motion.div>
-      </section>
-
-      {/* Features Section */}
-      <section className="px-6 pb-24 max-w-6xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <FeatureCard
-          title="Autonomous Gameplay Support"
-          description="Keeps tables active with intelligent bot participation that adapts to game flow and player dynamics."
-        />
-
-        <FeatureCard
-          title="Smart Risk Management"
-          description="Advanced safety algorithms control bot behavior, ensuring balanced gameplay and controlled risk exposure."
-        />
-
-        <FeatureCard
-          title="Player Behavioral Analytics"
-          description="Gain valuable insights into player tendencies, engagement, and patterns to improve your club’s strategy."
-        />
-
-        <FeatureCard
-          title="Full Administrative Control"
-          description="Complete control over bot parameters, activity levels, and performance directly from your admin panel."
-        />
-
-        <FeatureCard
-          title="Increase Table Activity"
-          description="Maintain consistent table traffic and player engagement, even during off-peak hours."
-        />
-
-        <FeatureCard
-          title="Rake Growth Optimization"
-          description="More hands played equals higher rake generation and improved overall profitability."
-        />
-      </section>
-
-      {/* CTA Section */}
-      <section className="text-center py-20 bg-gray-950">
-        <h2 className="text-4xl font-semibold mb-6">
-          Grow Your Poker Club with Intelligent Automation
-        </h2>
-        <p className="text-gray-400 mb-8 max-w-xl mx-auto">
-          Take full control of your tables, increase engagement, and maximize
-          profits using our advanced poker bot technology.
-        </p>
-        <a href="https://t.me/hrbotpo" target="_blank" rel="noopener noreferrer">
-  <Button className="text-lg px-8 py-6 rounded-2xl">
-    Contact Us
-  </Button>
-</a>
-      </section>
-
-      {/* Footer */}
-      <footer className="text-center py-10 text-gray-500 text-sm">
-        © {new Date().getFullYear()} Controllable Poker Bot. All rights reserved.
-      </footer>
+    <div class="mt-10">
+      <a href="https://t.me/your_telegram" target="_blank">
+        <button class="text-lg px-8 py-4 rounded-2xl bg-white text-black font-semibold hover:opacity-80 transition">
+          Contact Us
+        </button>
+      </a>
     </div>
-  );
-}
+  </section>
 
-function FeatureCard({ title, description }) {
-  return (
-    <motion.div
-      whileHover={{ scale: 1.05 }}
-      className="h-full"
-    >
-      <Card className="bg-gray-900 border-gray-800 h-full rounded-2xl shadow-xl">
-        <CardContent className="p-6">
-          <h3 className="text-xl font-semibold mb-3">{title}</h3>
-          <p className="text-gray-400">{description}</p>
-        </CardContent>
-      </Card>
-    </motion.div>
-  );
-}
+  <!-- Features -->
+  <section class="px-6 pb-24 max-w-6xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+    <div class="bg-gray-900 p-6 rounded-2xl shadow-xl">
+      <h3 class="text-xl font-semibold mb-3">Autonomous Gameplay Support</h3>
+      <p class="text-gray-400">Keeps tables active with intelligent bot participation that adapts to game flow and player dynamics.</p>
+    </div>
+
+    <div class="bg-gray-900 p-6 rounded-2xl shadow-xl">
+      <h3 class="text-xl font-semibold mb-3">Smart Risk Management</h3>
+      <p class="text-gray-400">Advanced safety algorithms control bot behavior, ensuring balanced gameplay and controlled risk exposure.</p>
+    </div>
+
+    <div class="bg-gray-900 p-6 rounded-2xl shadow-xl">
+      <h3 class="text-xl font-semibold mb-3">Player Behavioral Analytics</h3>
+      <p class="text-gray-400">Gain valuable insights into player tendencies, engagement, and patterns to improve your club strategy.</p>
+    </div>
+
+    <div class="bg-gray-900 p-6 rounded-2xl shadow-xl">
+      <h3 class="text-xl font-semibold mb-3">Full Administrative Control</h3>
+      <p class="text-gray-400">Complete control over bot parameters, activity levels, and performance directly from your admin panel.</p>
+    </div>
+
+    <div class="bg-gray-900 p-6 rounded-2xl shadow-xl">
+      <h3 class="text-xl font-semibold mb-3">Increase Table Activity</h3>
+      <p class="text-gray-400">Maintain consistent table traffic and player engagement, even during off-peak hours.</p>
+    </div>
+
+    <div class="bg-gray-900 p-6 rounded-2xl shadow-xl">
+      <h3 class="text-xl font-semibold mb-3">Rake Growth Optimization</h3>
+      <p class="text-gray-400">More hands played equals higher rake generation and improved profitability.</p>
+    </div>
+
+  </section>
+
+  <!-- CTA -->
+  <section class="text-center py-20 bg-gray-950">
+    <h2 class="text-4xl font-semibold mb-6">
+      Grow Your Poker Club with Intelligent Automation
+    </h2>
+
+    <p class="text-gray-400 mb-8 max-w-xl mx-auto">
+      Take full control of your tables, increase engagement, and maximize profits using our advanced poker bot technology.
+    </p>
+
+    <a href="https://t.me/hrbotpo" target="_blank">
+      <button class="text-lg px-8 py-4 rounded-2xl bg-white text-black font-semibold hover:opacity-80 transition">
+        Contact Us
+      </button>
+    </a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="text-center py-10 text-gray-500 text-sm">
+    © 2026 Controllable Poker Bot. All rights reserved.
+  </footer>
+
+</body>
+</html>
